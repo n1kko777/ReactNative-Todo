@@ -1,0 +1,5 @@
+export const THEME = {
+  DEFAULT_COLOR: "#232B45",
+  NAVBAR_COLOR: "#4630EB",
+  PADDING_DEFAULT: 20
+};
