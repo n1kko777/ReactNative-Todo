@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
-    height: 300
+    height: 150
   },
   emptyImg: {
     width: "100%",

@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button } from "@ui-kitten/components";
-import { View, StyleSheet, Alert, Dimensions } from "react-native";
+import { View, StyleSheet, Alert, Dimensions, Keyboard } from "react-native";
 import { THEME } from "../theme";
 
 import { Layout } from "@ui-kitten/components";
 
 export const TodoScreen = ({ todo, onSubmit, onRemove }) => {
-  const [value, setValue] = React.useState("");
+  const { title, id } = todo;
+
+  console.log("id :", id);
+
+  const [value, setValue] = React.useState(title);
   const { wrapper, addInput, button, buttonDelete } = styles;
 
   const onPressSubmit = () => {
     if (value.trim().length !== 0) {
       todo.title = value;
       onSubmit(todo);
-      setValue("");
+      Keyboard.dismiss();
     } else {
       Alert.alert("Укажите навзавние!");
-      setValue("");
     }
   };
-  const { title } = todo;
-
-  useEffect(() => {
-    setValue(title);
-  }, []);
 
   const [deviceWidth, setDeviceWidth] = useState(
     Dimensions.get("window").width - THEME.PADDING_DEFAULT * 2
@@ -59,7 +57,7 @@ export const TodoScreen = ({ todo, onSubmit, onRemove }) => {
         <Button
           style={buttonDelete}
           status="danger"
-          onPress={() => onRemove(todo.id)}
+          onPress={() => onRemove(id)}
         >
           Удалить
         </Button>
