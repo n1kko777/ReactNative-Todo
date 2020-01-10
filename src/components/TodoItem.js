@@ -1,7 +1,9 @@
-import React from "react";
-import { CheckBox, ListItem, Icon } from "@ui-kitten/components";
+import React, { useContext } from "react";
+import { ListItem, Icon } from "@ui-kitten/components";
+import { ScreenContext } from "../context/screen/screenContext";
 
-export const TodoItem = ({ todo, onRemove, onOpen }) => {
+export const TodoItem = ({ todo, onRemove }) => {
+  const { changeScreen } = useContext(ScreenContext);
   const { title, id } = todo;
 
   const longPressHandler = () => onRemove(id);
@@ -14,7 +16,7 @@ export const TodoItem = ({ todo, onRemove, onOpen }) => {
     <ListItem
       title={title}
       accessory={renderAccessory}
-      onPress={() => onOpen(id)}
+      onPress={() => changeScreen(id)}
       onLongPress={longPressHandler}
     />
   );

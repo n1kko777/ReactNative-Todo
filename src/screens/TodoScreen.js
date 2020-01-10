@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Input, Button } from "@ui-kitten/components";
 import { View, StyleSheet, Alert, Dimensions, Keyboard } from "react-native";
 import { THEME } from "../theme";
 
 import { Layout } from "@ui-kitten/components";
+import { TodoContext } from "../context/todo/todoContext";
+import { ScreenContext } from "../context/screen/screenContext";
 
-export const TodoScreen = ({ todo, onSubmit, onRemove }) => {
+export const TodoScreen = () => {
+  const { todoList, updateTodo, removeTodo } = useContext(TodoContext);
+  const { todoID } = useContext(ScreenContext);
+
+  const todo = todoList.find(t => t.id === todoID);
   const { title, id } = todo;
-
-  console.log("id :", id);
 
   const [value, setValue] = React.useState(title);
   const { wrapper, addInput, button, buttonDelete } = styles;
@@ -16,7 +20,7 @@ export const TodoScreen = ({ todo, onSubmit, onRemove }) => {
   const onPressSubmit = () => {
     if (value.trim().length !== 0) {
       todo.title = value;
-      onSubmit(todo);
+      updateTodo(todo);
       Keyboard.dismiss();
     } else {
       Alert.alert("Укажите навзавние!");
@@ -57,7 +61,7 @@ export const TodoScreen = ({ todo, onSubmit, onRemove }) => {
         <Button
           style={buttonDelete}
           status="danger"
-          onPress={() => onRemove(id)}
+          onPress={() => removeTodo(id)}
         >
           Удалить
         </Button>

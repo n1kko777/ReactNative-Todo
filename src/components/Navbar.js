@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Platform } from "react-native";
 import { Text } from "@ui-kitten/components";
 import { Layout, Icon, Button } from "@ui-kitten/components";
 
 import { THEME } from "../theme";
+import { ScreenContext } from "../context/screen/screenContext";
 
 const backHomeIcon = style => (
   <Icon {...style} width={24} height={24} fill="#fff" name="arrow-back" />
 );
 
-export const Navbar = ({ title, backToHome, isHome }) => {
-  const onPressHome = () => backToHome();
+export const Navbar = ({ title }) => {
+  const { todoID, changeScreen } = useContext(ScreenContext);
 
   return (
     <Layout
@@ -22,9 +23,9 @@ export const Navbar = ({ title, backToHome, isHome }) => {
         })
       }}
     >
-      {isHome !== null && (
+      {todoID !== null && (
         <Button
-          onPress={onPressHome}
+          onPress={() => changeScreen(null)}
           style={styles.button}
           appearance="ghost"
           status="danger"
