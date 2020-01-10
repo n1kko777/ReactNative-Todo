@@ -1,6 +1,6 @@
 import React from "react";
 import { Input, Button, Layout } from "@ui-kitten/components";
-import { StyleSheet, Alert, Keyboard, Dimensions } from "react-native";
+import { StyleSheet, Alert, Keyboard } from "react-native";
 
 export const AddTodo = ({ onSubmit }) => {
   const [value, setValue] = React.useState("");

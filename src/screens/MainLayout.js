@@ -13,7 +13,7 @@ import { TodoScreen } from "./TodoScreen";
 
 import { Navbar } from "../components/Navbar";
 
-import { StyleSheet, Alert, Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { THEME } from "../theme";
 import { ScreenContext } from "../context/screen/screenContext";
 
