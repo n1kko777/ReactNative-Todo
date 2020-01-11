@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Layout } from "@ui-kitten/components";
 import { StyleSheet, FlatList, Image, Dimensions } from "react-native";
 
@@ -8,7 +8,23 @@ import { THEME } from "../theme";
 import { TodoContext } from "../context/todo/todoContext";
 
 export const HomeScreen = () => {
-  const { addTodo, todoList, removeTodo } = useContext(TodoContext);
+  const {
+    addTodo,
+    todoList,
+    removeTodo,
+    fetchTodoList,
+    loading,
+    error
+  } = useContext(TodoContext);
+
+  const loadTodoList = useCallback(async () => await fetchTodoList(), [
+    fetchTodoList
+  ]);
+
+  useEffect(() => {
+    loadTodoList();
+  }, []);
+
   let content = (
     <FlatList
       data={todoList}

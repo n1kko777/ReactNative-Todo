@@ -1,15 +1,49 @@
-import { ADD_TODO, UPDATE_TODO, REMOVE_TODO } from "../types";
+import {
+  ADD_TODO,
+  REMOVE_TODO,
+  UPDATE_TODO,
+  FETCH_TODOLIST,
+  SET_LOADING,
+  CLEAR_LOADING,
+  SET_ERROR,
+  CLEAR_ERROR
+} from "../types";
 
-export const todoReducer = (state, { type, title, id }) => {
+export const todoReducer = (state, { type, title, id, error, todoList }) => {
   switch (type) {
+    case FETCH_TODOLIST:
+      return {
+        ...state,
+        todoList
+      };
+    case SET_LOADING:
+      return {
+        ...state,
+        loading: true
+      };
+    case CLEAR_LOADING:
+      return {
+        ...state,
+        loading: false
+      };
+    case SET_ERROR:
+      return {
+        ...state,
+        error
+      };
+    case CLEAR_ERROR:
+      return {
+        ...state,
+        error: null
+      };
     case ADD_TODO:
       return {
         ...state,
         todoList: [
           ...state.todoList,
           {
-            id: Date.now().toString(),
             complete: false,
+            id,
             title
           }
         ]
