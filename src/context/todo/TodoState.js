@@ -14,6 +14,8 @@ import {
 import { ScreenContext } from "../screen/screenContext";
 import { Alert } from "react-native";
 
+import { Http } from "../../request";
+
 export const TodoState = ({ children }) => {
   const { changeScreen } = useContext(ScreenContext);
 
@@ -36,20 +38,17 @@ export const TodoState = ({ children }) => {
     clearError();
 
     try {
-      const response = await fetch(
-        "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        }
+      const data = await Http.get(
+        "https://tododatabase-5b1b3.firebaseio.com/todolist.json"
       );
 
-      const data = await response.json();
-
-      const todoList = data !== null ? Object.keys(data).map(key => ({
-        ...data[key],
-        id: key
-      })) : [];
+      const todoList =
+        data !== null
+          ? Object.keys(data).map(key => ({
+              ...data[key],
+              id: key
+            }))
+          : [];
 
       dispatch({ type: FETCH_TODOLIST, todoList });
     } catch (error) {
@@ -65,17 +64,12 @@ export const TodoState = ({ children }) => {
     clearError();
 
     try {
-      const response = await fetch(
+      const {
+        name
+      } = await Http.post(
         "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, complete: false })
-        }
+        { title, complete: false }
       );
-
-      const data = await response.json();
-      const { name } = data;
 
       dispatch({ type: ADD_TODO, title, id: name });
     } catch (error) {
@@ -105,12 +99,8 @@ export const TodoState = ({ children }) => {
             clearError();
 
             try {
-              await fetch(
-                `https://tododatabase-5b1b3.firebaseio.com/todolist/${id}.json`,
-                {
-                  method: "DELETE",
-                  headers: { "Content-Type": "application/json" }
-                }
+              await Http.delete(
+                `https://tododatabase-5b1b3.firebaseio.com/todolist/${id}.json`
               );
 
               dispatch({ type: REMOVE_TODO, id });
@@ -133,15 +123,10 @@ export const TodoState = ({ children }) => {
     clearError();
 
     try {
-      await fetch(
+      await Http.patch(
         `https://tododatabase-5b1b3.firebaseio.com/todolist/${id}.json`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title })
-        }
+        { title }
       );
-
       dispatch({ type: UPDATE_TODO, id, title });
     } catch (error) {
       setError("Что-то пошло не так, попробукйте снова.");
