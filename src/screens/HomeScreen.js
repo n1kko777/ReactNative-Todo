@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Layout } from "@ui-kitten/components";
-import { StyleSheet, FlatList, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  FlatList,
+  Image,
+  Dimensions,
+  RefreshControl
+} from "react-native";
 
 import { AddTodo } from "../components/AddTodo";
 import { TodoItem } from "../components/TodoItem";
 import { THEME } from "../theme";
 import { TodoContext } from "../context/todo/todoContext";
+import { AppError } from "../components/ui/AppError";
 
 export const HomeScreen = () => {
   const {
@@ -21,6 +28,8 @@ export const HomeScreen = () => {
     fetchTodoList
   ]);
 
+  const handleRefreshing = () => loadTodoList();
+
   useEffect(() => {
     loadTodoList();
   }, []);
@@ -30,20 +39,24 @@ export const HomeScreen = () => {
       data={todoList}
       renderItem={({ item }) => <TodoItem todo={item} onRemove={removeTodo} />}
       keyExtractor={item => item.id}
+      ListEmptyComponent={
+        <Layout style={styles.empty}>
+          <Image
+            style={styles.emptyImg}
+            source={require("../../assets/no-items.png")}
+          />
+        </Layout>
+      }
       style={styles.flatList}
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          onRefresh={handleRefreshing}
+          tintColor="#fff"
+        />
+      }
     />
   );
-
-  if (todoList.length === 0) {
-    content = (
-      <Layout style={styles.empty}>
-        <Image
-          style={styles.emptyImg}
-          source={require("../../assets/no-items.png")}
-        />
-      </Layout>
-    );
-  }
 
   const [deviceWidth, setDeviceWidth] = useState(
     Dimensions.get("window").width - THEME.PADDING_DEFAULT * 2
@@ -64,8 +77,14 @@ export const HomeScreen = () => {
     <Layout
       style={{ marginHorizontal: THEME.PADDING_DEFAULT, width: deviceWidth }}
     >
-      <AddTodo onSubmit={addTodo} />
-      {content}
+      {error !== null ? (
+        <AppError loadTodoList={loadTodoList} />
+      ) : (
+        <>
+          <AddTodo onSubmit={addTodo} />
+          {content}
+        </>
+      )}
     </Layout>
   );
 };

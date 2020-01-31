@@ -32,18 +32,31 @@ export const TodoState = ({ children }) => {
   const clearError = () => dispatch({ type: CLEAR_ERROR });
 
   const fetchTodoList = async () => {
-    const response = await fetch(
-      "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      }
-    );
-
-    const data = await response.json();
-    const todoList = Object.keys(data).map(key => ({ ...data[key], id: key }));
+    setLoading();
+    clearError();
     
-    dispatch({ type: FETCH_TODOLIST, todoList });
+    try {
+      const response = await fetch(
+        "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+
+      const data = await response.json();
+      const todoList = Object.keys(data).map(key => ({
+        ...data[key],
+        id: key
+      }));
+
+      dispatch({ type: FETCH_TODOLIST, todoList });
+    } catch (error) {
+      setError("Что-то пошло не так, попробукйте снова.");
+      console.log("error :", error);
+    } finally {
+      clearLoading();
+    }
   };
 
   const addTodo = async title => {
