@@ -7,9 +7,11 @@ import { Layout } from "@ui-kitten/components";
 import { TodoContext } from "../context/todo/todoContext";
 import { ScreenContext } from "../context/screen/screenContext";
 
+import { AppLoader } from "../components/ui/AppLoader";
+
 export const TodoScreen = () => {
-  const { todoList, updateTodo, removeTodo } = useContext(TodoContext);
-  const { todoID } = useContext(ScreenContext);
+  const { todoList, updateTodo, removeTodo, loading } = useContext(TodoContext);
+  const { todoID, changeScreen } = useContext(ScreenContext);
 
   const todo = todoList.find(t => t.id === todoID);
   const { title, id } = todo;
@@ -17,11 +19,11 @@ export const TodoScreen = () => {
   const [value, setValue] = React.useState(title);
   const { wrapper, addInput, button, buttonDelete } = styles;
 
-  const onPressSubmit = () => {
+  const onPressSubmit = async () => {
     if (value.trim().length !== 0) {
-      todo.title = value;
-      updateTodo(todo);
       Keyboard.dismiss();
+      await updateTodo(id, value);
+      changeScreen(null);
     } else {
       Alert.alert("Укажите навзавние!");
     }
@@ -46,6 +48,7 @@ export const TodoScreen = () => {
     <Layout
       style={{ width: deviceWidth, marginHorizontal: THEME.PADDING_DEFAULT }}
     >
+      {loading && <AppLoader />}
       <View style={wrapper}>
         <Input
           placeholder="Название задачи"

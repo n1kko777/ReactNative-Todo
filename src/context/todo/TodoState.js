@@ -34,7 +34,7 @@ export const TodoState = ({ children }) => {
   const fetchTodoList = async () => {
     setLoading();
     clearError();
-    
+
     try {
       const response = await fetch(
         "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
@@ -45,10 +45,11 @@ export const TodoState = ({ children }) => {
       );
 
       const data = await response.json();
-      const todoList = Object.keys(data).map(key => ({
+
+      const todoList = data !== null ? Object.keys(data).map(key => ({
         ...data[key],
         id: key
-      }));
+      })) : [];
 
       dispatch({ type: FETCH_TODOLIST, todoList });
     } catch (error) {
@@ -60,19 +61,29 @@ export const TodoState = ({ children }) => {
   };
 
   const addTodo = async title => {
-    const response = await fetch(
-      "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, complete: false })
-      }
-    );
+    setLoading();
+    clearError();
 
-    const data = await response.json();
-    const { name } = data;
+    try {
+      const response = await fetch(
+        "https://tododatabase-5b1b3.firebaseio.com/todolist.json",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, complete: false })
+        }
+      );
 
-    dispatch({ type: ADD_TODO, title, id: name });
+      const data = await response.json();
+      const { name } = data;
+
+      dispatch({ type: ADD_TODO, title, id: name });
+    } catch (error) {
+      setError("Что-то пошло не так, попробукйте снова.");
+      console.log("error :", error);
+    } finally {
+      clearLoading();
+    }
   };
 
   const removeTodo = id => {
@@ -88,9 +99,27 @@ export const TodoState = ({ children }) => {
         },
         {
           text: "Удалить",
-          onPress: () => {
+          onPress: async () => {
             changeScreen(null);
-            dispatch({ type: REMOVE_TODO, id });
+            setLoading();
+            clearError();
+
+            try {
+              await fetch(
+                `https://tododatabase-5b1b3.firebaseio.com/todolist/${id}.json`,
+                {
+                  method: "DELETE",
+                  headers: { "Content-Type": "application/json" }
+                }
+              );
+
+              dispatch({ type: REMOVE_TODO, id });
+            } catch (error) {
+              setError("Что-то пошло не так, попробукйте снова.");
+              console.log("error :", error);
+            } finally {
+              clearLoading();
+            }
           },
           style: "destructive"
         }
@@ -99,7 +128,28 @@ export const TodoState = ({ children }) => {
     );
   };
 
-  const updateTodo = (id, title) => dispatch({ type: UPDATE_TODO, id, title });
+  const updateTodo = async (id, title) => {
+    setLoading();
+    clearError();
+
+    try {
+      await fetch(
+        `https://tododatabase-5b1b3.firebaseio.com/todolist/${id}.json`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title })
+        }
+      );
+
+      dispatch({ type: UPDATE_TODO, id, title });
+    } catch (error) {
+      setError("Что-то пошло не так, попробукйте снова.");
+      console.log("error :", error);
+    } finally {
+      clearLoading();
+    }
+  };
 
   return (
     <TodoContext.Provider
